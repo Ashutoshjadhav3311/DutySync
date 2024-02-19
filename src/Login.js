@@ -7,9 +7,12 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
 import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import IconButton from '@mui/material/IconButton';
 import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 function Login(){
+const {CurrentOfiicer, setCurrentOfficer} = useState(null);
 
     const darkTheme = createTheme({
         palette: {
@@ -92,7 +95,30 @@ function Login(){
                     
                 <li>Show Task its date </li>
                 <li>admin login to make changes</li>
-
+                <Card sx={{ minWidth: 275 }}>
+      <CardContent> <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          Current officer assigned on  duty:Fromdate to ToDate
+          {CurrentOfiicer}
+        </Typography><Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          Handover Duties:
+          <li>DUty 1</li>
+          <li>DUty 2</li>
+            <li>DUty 3</li> 
+            <li>DUty 4</li>
+            <li>DUty 5</li>
+            <li>DUty 6</li>
+            <li>DUty 7</li>
+          {CurrentOfiicer}
+        </Typography><Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          Handover to: on :
+          <h5>Officer Name</h5>
+          {CurrentOfiicer}
+        </Typography>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          Next officer assigned on  duty: from Date
+          {CurrentOfiicer}
+        </Typography>
+        </CardContent></Card>
                     <br />
                     <br />
                     <button onClick={logOut}>Log out</button>
