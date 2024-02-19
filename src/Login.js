@@ -82,19 +82,25 @@ function Login(){
         <Box component="section" sx={{ bgcolor: '#48484a', height: '70vh' }} >
         
            
-           <h3>Login </h3>
+           
         {profile ? (
                 <div>
                     <img src={profile.picture} alt="user image" />
                     <h3>User Logged in</h3>
                     <p>Name: {profile.name}</p>
                     <p>Email Address: {profile.email}</p>
+                    
+                <li>Show Task its date </li>
+                <li>admin login to make changes</li>
+
                     <br />
                     <br />
                     <button onClick={logOut}>Log out</button>
                 </div>
             ) : (
+                <div><h2>Login</h2>
                 <button onClick={() => login()}>Sign in with Google  </button>
+                </div>
             )}</Box>
       </Container>
       </ThemeProvider>
