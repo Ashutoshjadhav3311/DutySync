@@ -7,7 +7,15 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+         <li>names input</li>
+         <li>Roles output</li>
+         <li>Role Tasks</li>
+         <li>Task date</li>  
+         <li>Task comment</li>
+         <li>Save names in db and assign roles</li>
+         <li>Noifty particular user on each friday about next person role-Email.js</li>
+         <li>Use SQS</li>
+
         </p>
         <a
           className="App-link"
