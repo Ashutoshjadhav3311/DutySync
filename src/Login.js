@@ -7,8 +7,16 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 function Login(){
 
+    const darkTheme = createTheme({
+        palette: {
+          mode: 'dark',
+        },
+      });
+      
     const [ user, setUser ] = useState([]);
     const [ profile, setProfile ] = useState(null);
 
@@ -45,7 +53,7 @@ function Login(){
     
         console.log(profile);};
     return (
-       <div>
+       <div><ThemeProvider theme={darkTheme}>
  <AppBar position="static">    <Typography
             variant="h6"
             noWrap
@@ -71,7 +79,7 @@ function Login(){
 </AppBar>            
             <CssBaseline />
       <Container maxWidth="sm">
-        <Box component="section" sx={{ bgcolor: '#cfe8fc', height: '70vh',justifyContent: 'center' }} >
+        <Box component="section" sx={{ bgcolor: '#48484a', height: '70vh' }} >
         
            
            <h3>Login </h3>
@@ -89,7 +97,7 @@ function Login(){
                 <button onClick={() => login()}>Sign in with Google  </button>
             )}</Box>
       </Container>
-      
+      </ThemeProvider>
         </div>
     );
 
