@@ -2,6 +2,11 @@ import {googleLogout,GoogleLogin,useGoogleLogin  } from '@react-oauth/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import AppBar from '@mui/material/AppBar';
+import Typography from '@mui/material/Typography';
 function Login(){
 
     const [ user, setUser ] = useState([]);
@@ -22,6 +27,7 @@ function Login(){
                         }
                     })
                     .then((res) => {
+                       
                         setProfile(res.data);
                     })
                     .catch((err) => console.log(err));
@@ -35,13 +41,41 @@ function Login(){
         googleLogout();
         setProfile(null);
     };
-
+    const test = () => {
+    
+        console.log(profile);};
     return (
        <div>
-            <h2>React Google Login</h2>
-            <br />
-            <br />
-            {profile ? (
+ <AppBar position="static">    <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            href="#app-bar-with-responsive-menu"
+            sx={{
+              mr: 2,
+              
+    justifyContent: 'center',
+              
+              display: { xs: 'none', md: 'flex' },
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+              textAlign: 'center', 
+              width: '100%'
+            }}
+          >
+            Duty Sync
+          </Typography>
+</AppBar>            
+            <CssBaseline />
+      <Container maxWidth="sm">
+        <Box component="section" sx={{ bgcolor: '#cfe8fc', height: '70vh',justifyContent: 'center' }} >
+        
+           
+           <h3>Login </h3>
+        {profile ? (
                 <div>
                     <img src={profile.picture} alt="user image" />
                     <h3>User Logged in</h3>
@@ -53,7 +87,9 @@ function Login(){
                 </div>
             ) : (
                 <button onClick={() => login()}>Sign in with Google  </button>
-            )}
+            )}</Box>
+      </Container>
+      
         </div>
     );
 
