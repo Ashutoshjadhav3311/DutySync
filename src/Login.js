@@ -41,7 +41,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           Housename: houseId // Assuming the input field is for the house name
         };
     
-        const response = await fetch('http://localhost:5000/createHouse', {
+        const response = await fetch('https://dutysyncserver.onrender.com/createHouse', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
