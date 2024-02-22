@@ -15,6 +15,7 @@ function App() {
          <li>Save names in db and assign roles</li>
          <li>Noifty particular user on each friday about next person role-Email.js</li>
          <li>Use SQS</li>
+         <li>admin login to make changes</li>
 
         </p>
         <a

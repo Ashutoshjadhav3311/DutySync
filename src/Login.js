@@ -2,6 +2,8 @@ import {googleLogout,GoogleLogin,useGoogleLogin  } from '@react-oauth/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -9,8 +11,9 @@ import AppBar from '@mui/material/AppBar';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import IconButton from '@mui/material/IconButton';
 import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
+
+
 function Login(){
 const {CurrentOfiicer, setCurrentOfficer} = useState(null);
 
@@ -22,6 +25,41 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
       
     const [ user, setUser ] = useState([]);
     const [ profile, setProfile ] = useState(null);
+    const [houseId, setHouseId] = useState('');
+
+    const handleChange = (event) => {
+      setHouseId(event.target.value);
+    };
+  
+    const handleSubmit = () => {
+      saveHouseID(houseId);
+    };
+  
+    const saveHouseID = async () => {
+      try {
+        const payload = {
+          Housename: houseId // Assuming the input field is for the house name
+        };
+    
+        const response = await fetch('http://localhost:5000/createHouse', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+    
+        if (!response.ok) {
+          throw new Error('Failed to save house ID');
+        }
+    
+        const data = await response.json();
+        console.log('House ID saved:', data);
+      } catch (error) {
+        console.error('Error saving house ID:', error.message);
+      }
+    };
+    
 
     const login = useGoogleLogin({
         onSuccess: (codeResponse) => setUser(codeResponse),
@@ -92,9 +130,50 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
                     <h3>User Logged in</h3>
                     <p>Name: {profile.name}</p>
                     <p>Email Address: {profile.email}</p>
+                   
+                    <Button
+        variant="contained"
+        color="error"
+        onClick={logOut}>
+  Log out
+</Button>
+               
+                <Card sx={{ minWidth: 275 }}>
+      <CardContent> 
+      <Box sx={{ '& > :not(style)': { m: 1 } }}>
+     <p>Create New House Id:</p><TextField id="outlined-basic"  variant="outlined" value={houseId}
+        onChange={handleChange}
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}>
+  Submit
+</Button>
+
+    </Box>
+        </CardContent></Card>
+
+    
+                  
                     
-                <li>Show Task its date </li>
+                </div>
+            ) : (
+                <div><h2>Login</h2>
+                <button onClick={() => login()}>Sign in with Google  </button>
+                </div>
+            )}</Box>
+      </Container>
+      </ThemeProvider>
+        </div>
+    );
+
+}
+export default Login;
+/* <li>Show Task its date </li>
                 <li>admin login to make changes</li>
+                
+                    
                 <Card sx={{ minWidth: 275 }}>
       <CardContent> <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
           Current officer assigned on  duty:Fromdate to ToDate
@@ -119,19 +198,4 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           {CurrentOfiicer}
         </Typography>
         </CardContent></Card>
-                    <br />
-                    <br />
-                    <button onClick={logOut}>Log out</button>
-                </div>
-            ) : (
-                <div><h2>Login</h2>
-                <button onClick={() => login()}>Sign in with Google  </button>
-                </div>
-            )}</Box>
-      </Container>
-      </ThemeProvider>
-        </div>
-    );
-
-}
-export default Login;
+                */
