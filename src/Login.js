@@ -52,7 +52,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         if (!response.ok) {
           throw new Error('Failed to save house ID');
         }
-    
+        alert('House ID saved');
         const data = await response.json();
         console.log('House ID saved:', data);
       } catch (error) {
