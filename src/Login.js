@@ -14,6 +14,7 @@ import CardContent from '@mui/material/CardContent';
 import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 
 
+
 function Login(){
 const {CurrentOfiicer, setCurrentOfficer} = useState(null);
 
@@ -26,19 +27,26 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
     const [ user, setUser ] = useState([]);
     const [ profile, setProfile ] = useState(null);
     const [houseId, setHouseId] = useState('');
-
+    const[houseIdtoSearch, setHouseIdtoSearch] = useState('');
+    const[housemembers,setHouseMembers]=useState([]);
     const handleChange = (event) => {
       setHouseId(event.target.value);
     };
-  
-    const handleSubmit = () => {
+      const handleSubmit = () => {
       saveHouseID(houseId);
     };
-  
+    const handleChangeHouseId = (event) => {
+      setHouseIdtoSearch(event.target.value);
+    }
+      
+    const handleSubmitMemberAdd = () => {
+      addHouseMember(houseIdtoSearch);
+    }
     const saveHouseID = async () => {
       try {
         const payload = {
-          Housename: houseId // Assuming the input field is for the house name
+          Housename: houseId,
+          Membername: [profile.name]
         };
     
         const response = await fetch('https://dutysyncserver.onrender.com/createHouse', {
@@ -60,6 +68,29 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
       }
     };
     
+    const addHouseMember = async () => { 
+      try {
+        const payload = {
+          Housename: houseIdtoSearch,
+          Membername: profile.name};
+          const response = await fetch('https://dutysyncserver.onrender.com/addHouseMembe', {    //https://dutysyncserver.onrender.com/addHouseMember
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+      
+          if (!response.ok) {
+            throw new Error('Failed to save Member name to house ');
+          }
+          alert('member name saved');
+          const data = await response.json();
+          console.log('Member saved:', data);
+        } catch (error) {
+          console.error('Error saving house ID:', error.message);
+        }
+      }
 
     const login = useGoogleLogin({
         onSuccess: (codeResponse) => setUser(codeResponse),
@@ -141,6 +172,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
                 <Card sx={{ minWidth: 275 }}>
       <CardContent> 
       <Box sx={{ '& > :not(style)': { m: 1 } }}>
+      <p>Create a new HouseID or join existing one</p>
      <p>Create New House Id:</p><TextField id="outlined-basic"  variant="outlined" value={houseId}
         onChange={handleChange}
       />
@@ -148,6 +180,16 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         variant="contained"
         color="primary"
         onClick={handleSubmit}>
+  Submit
+</Button>
+<p>Join an existing House Id</p>
+<TextField id="outlined-basic"  variant="outlined" value={houseIdtoSearch}
+        onChange={handleChangeHouseId}
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmitMemberAdd}>
   Submit
 </Button>
 
