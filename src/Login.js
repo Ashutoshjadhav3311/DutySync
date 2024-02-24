@@ -23,7 +23,8 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           mode: 'dark',
         },
       });
-      
+      const [houseDetails,setHouseDetails]=useState();
+    const [housePresent,setHousePresent]=useState(null);  
     const [ user, setUser ] = useState([]);
     const [ profile, setProfile ] = useState(null);
     const [houseId, setHouseId] = useState('');
@@ -73,7 +74,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         const payload = {
           Housename: houseIdtoSearch,
           Membername: profile.name};
-          const response = await fetch('https://dutysyncserver.onrender.com/addHouseMembe', {    //https://dutysyncserver.onrender.com/addHouseMember
+          const response = await fetch('https://dutysyncserver.onrender.com/addHouseMember', {    //https://dutysyncserver.onrender.com/addHouseMember
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -92,6 +93,36 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         }
       }
 
+      const checkMemberinHouse = async () => {
+        try {
+          if (!profile) {
+          console.error('Profile is null');
+           return;
+          }
+          const response = await fetch(`https://dutysyncserver.onrender.com/checkHouseMember/${profile.name}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          const responseData = await response.json();
+          //setHouseName(responseData.Housename);
+          console.log(responseData);
+          setHouseDetails(responseData);
+          setHousePresent(true)
+         // console.log(setHouseName)
+          
+          if (response === "Member not in any house") {
+            alert("You're not present in any house. Create or add to an existing house.");
+          } else {
+            alert(`Member of house: ${responseData.Housename}`);
+          }
+        } catch (error) {
+          console.error('Error checking house member:', error.message);
+        }
+      }
+      
+
     const login = useGoogleLogin({
         onSuccess: (codeResponse) => setUser(codeResponse),
         onError: (error) => console.log('Login Failed:', error)
@@ -109,9 +140,11 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
                     .then((res) => {
                        
                         setProfile(res.data);
+                        checkMemberinHouse()
                     })
                     .catch((err) => console.log(err));
             }
+
         },
         [ user ]
     );
@@ -161,14 +194,17 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
                     <h3>User Logged in</h3>
                     <p>Name: {profile.name}</p>
                     <p>Email Address: {profile.email}</p>
-                   
+                   <button onClick={checkMemberinHouse}>CHECK MEMBER PRESENT IN HOUSE</button>
                     <Button
         variant="contained"
         color="error"
         onClick={logOut}>
   Log out
 </Button>
-               
+
+{housePresent && <Typography variant="h4">{houseDetails.Housename}</Typography>}
+
+             {!housePresent&&(
                 <Card sx={{ minWidth: 275 }}>
       <CardContent> 
       <Box sx={{ '& > :not(style)': { m: 1 } }}>
@@ -197,7 +233,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         </CardContent></Card>
 
     
-                  
+)}  
                     
                 </div>
             ) : (
