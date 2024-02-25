@@ -58,12 +58,15 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           body: JSON.stringify(payload)
         });
     
-        if (!response.ok) {
+        if (response.status===500) {
           throw new Error('Failed to save house ID');
         }
-        alert('House ID saved');
+        if(response.status===400){
+          alert("HouseId already registered")
+        }
+        else{alert('House ID saved');}
         const data = await response.json();
-        console.log('House ID saved:', data);
+        //console.log('House ID saved:', data);
       } catch (error) {
         console.error('Error saving house ID:', error.message);
       }
@@ -112,11 +115,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           setHousePresent(true)
          // console.log(setHouseName)
           
-          if (response === "Member not in any house") {
-            alert("You're not present in any house. Create or add to an existing house.");
-          } else {
-            alert(`Member of house: ${responseData.Housename}`);
-          }
+          
         } catch (error) {
           console.error('Error checking house member:', error.message);
         }
@@ -127,7 +126,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         onSuccess: (codeResponse) => setUser(codeResponse),
         onError: (error) => console.log('Login Failed:', error)
     });
-    useEffect(
+    useEffect(    //using user as array dependency so when user is updated with response, code  is executed to get user details using access token
         () => {
             if (user) {
                 axios
@@ -140,14 +139,20 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
                     .then((res) => {
                        
                         setProfile(res.data);
-                        checkMemberinHouse()
+                        
                     })
                     .catch((err) => console.log(err));
             }
-
+            
         },
         [ user ]
     );
+
+    useEffect(() => { // using profile as dependency since profile is set using a async function
+      if (profile) {
+        checkMemberinHouse(); 
+      }
+    }, [profile]); // Add profile to the dependency array
 
     // log out function to log the user out of google and set the profile array to null
     const logOut = () => {
@@ -194,7 +199,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
                     <h3>User Logged in</h3>
                     <p>Name: {profile.name}</p>
                     <p>Email Address: {profile.email}</p>
-                   <button onClick={checkMemberinHouse}>CHECK MEMBER PRESENT IN HOUSE</button>
+                   <button onClick={checkMemberinHouse}>Test</button>
                     <Button
         variant="contained"
         color="error"
@@ -202,7 +207,16 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
   Log out
 </Button>
 
-{housePresent && <Typography variant="h4">{houseDetails.Housename}</Typography>}
+{housePresent && houseDetails.Membername &&  (<div><Typography variant="h4">You are Member of HouseID: {houseDetails.Housename}</Typography>
+
+<h2>List of House Members</h2>
+      <ul>
+        {houseDetails.Membername.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+</div>
+)}
 
              {!housePresent&&(
                 <Card sx={{ minWidth: 275 }}>
