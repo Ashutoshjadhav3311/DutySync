@@ -10,6 +10,7 @@ import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
+import Slider from '@mui/material/Slider';
 import CardContent from '@mui/material/CardContent';
 import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 
@@ -30,6 +31,22 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
     const [houseId, setHouseId] = useState('');
     const[houseIdtoSearch, setHouseIdtoSearch] = useState('');
     const[housemembers,setHouseMembers]=useState([]);
+    const [jobRolesNumber, setJobRolesNumber] = useState();
+    const [roleNames, setRoleNames] = useState([]);
+    const [roleChangeFrequency,setRoleChangeFrequency]=useState();
+  const handleJobRolesNumber = (event) => {
+    setJobRolesNumber(event.target.value);
+    console.log(jobRolesNumber)
+  };
+  const handleRoleNameChange = (e, index) => {
+    const newRoleNames = [...roleNames];
+    newRoleNames[index] = e.target.value;
+    setRoleNames(newRoleNames);
+  };
+
+  const handleRoleChangeFrequency=(event)=>{
+    setRoleChangeFrequency(event.target.value);
+  }
     const handleChange = (event) => {
       setHouseId(event.target.value);
     };
@@ -38,8 +55,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
     };
     const handleChangeHouseId = (event) => {
       setHouseIdtoSearch(event.target.value);
-    }
-      
+    }   
     const handleSubmitMemberAdd = () => {
       addHouseMember(houseIdtoSearch);
     }
@@ -102,7 +118,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           console.error('Profile is null');
            return;
           }
-          const response = await fetch(`http://localhost:9000/checkHouseMember/${profile.name}`, {    //`https://dutysyncserver.onrender.com/checkHouseMember/${profile.name}`
+          const response = await fetch(`https://dutysyncserver.onrender.com/checkHouseMember/${profile.name}`, {    //`https://dutysyncserver.onrender.com/checkHouseMember/${profile.name}`
             method: 'GET',
             headers: {
               'Content-Type': 'application/json'
@@ -110,7 +126,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           });
           const responseData = await response.json();
           //setHouseName(responseData.Housename);
-          console.log(responseData);
+          //console.log(responseData);
           setHouseDetails(responseData);
           setHousePresent(true)
          // console.log(setHouseName)
@@ -121,6 +137,32 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         }
       }
       
+      const saveRoles =async()=>{
+        try{
+          if(!housePresent){
+            console.log("House not registered")
+            return;
+          }
+          console.log("rolesnames:",roleNames)
+          console.log("housename:",houseDetails.Housename)
+          const payload = {
+            Housename: houseDetails.Housename,
+            RolesNames: roleNames
+          };
+      
+          const response = await fetch('https://dutysyncserver.onrender.com/saveRoles', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          console.log("resposne",response)
+        }
+        catch (error) {
+          console.error('Error checking house member:', error.message);
+        }
+      }
 
     const login = useGoogleLogin({
         onSuccess: (codeResponse) => setUser(codeResponse),
@@ -216,14 +258,39 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         ))}
       </ul>
       <Typography>Enter Number of Daily roles</Typography>
-      <TextField id="outlined-basic"  variant="outlined" value={houseId}
-        onChange={handleChange}
-              />
-              <Typography>Enter of Daily roles</Typography>
+      <Slider
+        size="large"
+        defaultValue={1}
+        aria-label="Small"
+        valueLabelDisplay="on"
+        min={1}
+        max={25}
+        value={jobRolesNumber} onChange={handleJobRolesNumber} 
+      />
+     
+     
+              <Typography>Enter Names of Daily roles</Typography>
+              {Array.from({ length: jobRolesNumber }, (_, index) => (
+          <div key={index}>
+            <label htmlFor={`roleName${index + 1}`}>Role Name {index + 1}:</label>
+            <input 
+              type="text" 
+              id={`roleName${index + 1}`} 
+              name={`roleName${index + 1}`} 
+              value={roleNames[index]} 
+              onChange={(e) => handleRoleNameChange(e, index)}
+            />
+          </div>
+        ))}
+              <Typography>Enter Frequency of Daily roles in terms of days</Typography>
+              <input 
+              type="number" 
 
-              <Typography>Enter Frequency of Daily roles</Typography>
-
+              value={roleChangeFrequency} 
+              onChange={handleRoleChangeFrequency}
+            />
               <Typography>Enter Tasks for "particulair" roles</Typography>
+              <Button  onClick={saveRoles}>Submit</Button>
 </div>
 ):(
 <Card sx={{ minWidth: 275 }}>
