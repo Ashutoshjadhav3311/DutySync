@@ -158,6 +158,10 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
             body: JSON.stringify(payload)
           });
           console.log("resposne",response)
+          if (!response.ok) {
+            throw new Error('Failed to save Roles to HouseID ');
+          }
+          alert(`Roles saved to HouseID:${houseDetails.Housename}`);
         }
         catch (error) {
           console.error('Error checking house member:', error.message);
