@@ -29,11 +29,13 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
     const [ user, setUser ] = useState([]);
     const [ profile, setProfile ] = useState(null);
     const [houseId, setHouseId] = useState('');
+    const [houseIdCreatedorSaved, setHouseIdCreatedorSaved ]= useState(null);
     const[houseIdtoSearch, setHouseIdtoSearch] = useState('');
     const[housemembers,setHouseMembers]=useState([]);
     const [jobRolesNumber, setJobRolesNumber] = useState();
     const [roleNames, setRoleNames] = useState([]);
     const [roleChangeFrequency,setRoleChangeFrequency]=useState();
+    const [assignedRoles, setAssignedRoles]=useState();
   const handleJobRolesNumber = (event) => {
     setJobRolesNumber(event.target.value);
     console.log(jobRolesNumber)
@@ -81,6 +83,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           alert("HouseId already registered")
         }
         else{alert('House ID saved');}
+        setHousePresent(true)
         const data = await response.json();
         //console.log('House ID saved:', data);
       } catch (error) {
@@ -107,6 +110,8 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           alert('member name saved');
           const data = await response.json();
           console.log('Member saved:', data);
+          setHousePresent(true)
+          
         } catch (error) {
           console.error('Error saving house ID:', error.message);
         }
@@ -147,7 +152,8 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           console.log("housename:",houseDetails.Housename)
           const payload = {
             Housename: houseDetails.Housename,
-            RolesNames: roleNames
+            RolesNames: roleNames,
+            Frequency:roleChangeFrequency
           };
       
           const response = await fetch('https://dutysyncserver.onrender.com/saveRoles', {
@@ -168,6 +174,77 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         }
       }
 
+      const leaveHouse = async () => {
+        try {
+          const payload = {
+            Housename: houseIdtoSearch,
+            Membername: profile.name
+          };
+          const response = await fetch("http://localhost:9000/removeHouseMember", {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+
+            },
+            body: JSON.stringify(payload)
+          });
+      
+          if (!response.ok) {
+            throw new Error('Failed to leave the house');
+          }
+      
+          alert('You have left the house');
+          setHousePresent(false); // Reset the state to hide the house details 
+        } catch (error) {
+          console.error('Error leaving the house:', error.message);
+        }
+      };
+      const assignroles = async()=>{
+      try{
+        const payload = {
+          Housename: houseDetails.Housename
+        };
+        const response = await fetch('http://localhost:9000/assignRolesToHouseMembers', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          console.log("resposne",response)
+          if (response.status===404) {
+            alert(`Roles not found for house ${houseDetails.Housename}` );
+            throw new Error('Failed to Assign Roles to HouseID ');
+          }
+          if (response.status===500) {
+            alert(`Internal Server error` );
+          }
+          alert("Roles assigned to house members successfully")
+          
+      }
+      catch{
+
+      }
+      }
+      const getroles =async()=>{
+        try{
+          const response = await fetch(`http://localhost:9000/getroles/${houseDetails.Housename}`, {    //`https://dutysyncserver.onrender.com/checkHouseMember/${profile.name}`
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+          
+        });
+        const responseData = await response.json();
+        console.log(responseData)
+        setAssignedRoles(responseData)
+        
+        }
+        
+        catch{
+          console.error('Error getting house roles');
+        }
+      }
     const login = useGoogleLogin({
         onSuccess: (codeResponse) => setUser(codeResponse),
         onError: (error) => console.log('Login Failed:', error)
@@ -205,9 +282,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         googleLogout();
         setProfile(null);
     };
-    const test = () => {
     
-        console.log(profile);};
     return (
        <div><ThemeProvider theme={darkTheme}>
  <AppBar position="static">    <Typography
@@ -261,6 +336,9 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           <li key={index}>{item}</li>
         ))}
       </ul>
+     
+      <Button  variant="contained"
+        color="primary"onClick={leaveHouse}>Leave House</Button>
       <Typography>Enter Number of Daily roles</Typography>
       <Slider
         size="large"
@@ -289,12 +367,38 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
               <Typography>Enter Frequency of Daily roles in terms of days</Typography>
               <input 
               type="number" 
-
+                min={1}
               value={roleChangeFrequency} 
               onChange={handleRoleChangeFrequency}
             />
               <Typography>Enter Tasks for "particulair" roles</Typography>
-              <Button  onClick={saveRoles}>Submit</Button>
+              <Button variant="contained"
+        color="primary" onClick={saveRoles}>Submit</Button>
+              <Button variant="contained"
+        color="primary"  onClick={assignroles}>Assign roles</Button>
+              <button onClick={getroles}>get roles</button>
+              {assignedRoles ? (
+  <div>
+    <h2>Assigned Roles</h2>
+    <ul>
+      {Object.entries(assignedRoles).map(([member, data]) => {
+        // Exclude _id and Housename keys
+        if (member !== '_id' && member !== 'Housename') {
+          return (
+            <li key={member}>
+              <strong>{member}</strong> - Role: {data.role}, Start Date: {data.startDate}, End Date: {data.endDate}
+            </li>
+          );
+        } else {
+          return null; // Skip rendering for _id and Housename keys
+        }
+      })}
+    </ul>
+  </div>
+) : (
+  <p>No assigned roles available.</p>
+)}
+
 </div>
 ):(
 <Card sx={{ minWidth: 275 }}>
@@ -340,32 +444,3 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
 
 }
 export default Login;
-/* <li>Show Task its date </li>
-                <li>admin login to make changes</li>
-                
-                    
-                <Card sx={{ minWidth: 275 }}>
-      <CardContent> <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Current officer assigned on  duty:Fromdate to ToDate
-          {CurrentOfiicer}
-        </Typography><Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Handover Duties:
-          <li>DUty 1</li>
-          <li>DUty 2</li>
-            <li>DUty 3</li> 
-            <li>DUty 4</li>
-            <li>DUty 5</li>
-            <li>DUty 6</li>
-            <li>DUty 7</li>
-          {CurrentOfiicer}
-        </Typography><Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Handover to: on :
-          <h5>Officer Name</h5>
-          {CurrentOfiicer}
-        </Typography>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Next officer assigned on  duty: from Date
-          {CurrentOfiicer}
-        </Typography>
-        </CardContent></Card>
-                */
