@@ -376,7 +376,9 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         color="primary" onClick={saveRoles}>Submit</Button>
               <Button variant="contained"
         color="primary"  onClick={assignroles}>Assign roles</Button>
-              <button onClick={getroles}>get roles</button>
+        <Button variant="contained"
+        color="primary"  onClick={getroles}>Display roles</Button>
+              
               {assignedRoles ? (
   <div>
     <h2>Assigned Roles</h2>
