@@ -180,7 +180,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
             Housename: houseIdtoSearch,
             Membername: profile.name
           };
-          const response = await fetch("http://localhost:9000/removeHouseMember", {
+          const response = await fetch("https://dutysyncserver.onrender.com/removeHouseMember", {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json'
@@ -204,7 +204,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
         const payload = {
           Housename: houseDetails.Housename
         };
-        const response = await fetch('http://localhost:9000/assignRolesToHouseMembers', {
+        const response = await fetch('https://dutysyncserver.onrender.com/assignRolesToHouseMembers', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -228,7 +228,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
       }
       const getroles =async()=>{
         try{
-          const response = await fetch(`http://localhost:9000/getroles/${houseDetails.Housename}`, {    //`https://dutysyncserver.onrender.com/checkHouseMember/${profile.name}`
+          const response = await fetch(`https://dutysyncserver.onrender.com/getroles/${houseDetails.Housename}`, {    //`https://dutysyncserver.onrender.com/checkHouseMember/${profile.name}`
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
