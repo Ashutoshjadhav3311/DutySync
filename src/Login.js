@@ -111,6 +111,7 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           const data = await response.json();
           console.log('Member saved:', data);
           setHousePresent(true)
+          checkMemberinHouse()
           
         } catch (error) {
           console.error('Error saving house ID:', error.message);
@@ -177,9 +178,10 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
       const leaveHouse = async () => {
         try {
           const payload = {
-            Housename: houseIdtoSearch,
+            Housename: houseDetails.Housename,
             Membername: profile.name
           };
+          console.log(houseDetails.Housename)
           const response = await fetch("https://dutysyncserver.onrender.com/removeHouseMember", {
             method: 'DELETE',
             headers: {
@@ -188,13 +190,15 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
             },
             body: JSON.stringify(payload)
           });
-      
-          if (!response.ok) {
-            throw new Error('Failed to leave the house');
+          console.log(response.status)
+          if (response.status===200) {
+            alert('You have left the house');
+          setHousePresent(false); // Reset the state to hide the house details
+          
+          return
           }
-      
-          alert('You have left the house');
-          setHousePresent(false); // Reset the state to hide the house details 
+          else{throw new Error('Failed to leave the house');}
+           
         } catch (error) {
           console.error('Error leaving the house:', error.message);
         }
