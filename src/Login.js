@@ -111,7 +111,8 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           const data = await response.json();
           console.log('Member saved:', data);
           setHousePresent(true)
-          checkMemberinHouse()
+          setHouseDetails(data);
+         // checkMemberinHouse()
           
         } catch (error) {
           console.error('Error saving house ID:', error.message);
@@ -132,8 +133,10 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
           });
           const responseData = await response.json();
           //setHouseName(responseData.Housename);
-          //console.log(responseData);
+          console.log("checkMemberinHouse responsedata",responseData);
+          console.log("checkMemberinHouse response",response)
           setHouseDetails(responseData);
+          
           setHousePresent(true)
          // console.log(setHouseName)
           
