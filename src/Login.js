@@ -390,18 +390,20 @@ const {CurrentOfiicer, setCurrentOfficer} = useState(null);
   <div>
     <h2>Assigned Roles</h2>
     <ul>
-      {Object.entries(assignedRoles).map(([member, data]) => {
-        // Exclude _id and Housename keys
-        if (member !== '_id' && member !== 'Housename') {
-          return (
-            <li key={member}>
-              <strong>{member}</strong> - Role: {data.role}, Start Date: {data.startDate}, End Date: {data.endDate}
-            </li>
-          );
-        } else {
-          return null; // Skip rendering for _id and Housename keys
-        }
-      })}
+  
+    {Object.entries(assignedRoles).map(([key, value]) => {
+      // Check if the key is "members"
+      if (key === 'members') {
+        // Iterate over the members array
+        return value.map((member) => (
+          <li key={member.membername}>
+            <strong>{member.membername}</strong> - Role: {member.role}, Start Date: {member.startDate}, End Date: {member.endDate}
+          </li>
+        ));
+      }
+      return null; // Skip rendering for other keys
+    })}
+  
     </ul>
   </div>
 ) : (
